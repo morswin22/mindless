@@ -1,0 +1,26 @@
+{
+  "name": "mindless",
+  "version": "0.0.1",
+  "description": "Web app using express, mongodb, socketio, p5js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "build": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/morswin22/mindless.git"
+  },
+  "author": "Patryk Janiak <xmorswinx@gmail.com> (https://stacket.dev/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/morswin22/mindless/issues"
+  },
+  "homepage": "https://github.com/morswin22/mindless#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.5"
+  }
+}
