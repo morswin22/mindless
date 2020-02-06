@@ -4,8 +4,7 @@
   "description": "Web app using express, mongodb, socketio, p5js",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"nodemon .\" \"npm run watch\"",
-    "watch": "webpack --mode=development --config webpack.config.js",
+    "start": "concurrently \"cross-env NODE_ENV=development nodemon .\" \"webpack --mode=development --config webpack.config.js\"",
     "production": "webpack --mode=production --config webpack.config.js && node ."
   },
   "repository": {
@@ -19,6 +18,9 @@
   },
   "homepage": "https://github.com/morswin22/mindless#readme",
   "dependencies": {
+    "concurrently": "^5.1.0",
+    "cross-env": "^7.0.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1"
   },
   "devDependencies": {
@@ -27,6 +29,9 @@
     "webpack-cli": "^3.3.10"
   },
   "nodemonConfig": {
-    "ignore": ["build/*", "src/*"]
+    "ignore": [
+      "build/*",
+      "src/*"
+    ]
   }
 }
