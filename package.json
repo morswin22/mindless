@@ -21,7 +21,8 @@
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "p5": "^0.10.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.2",

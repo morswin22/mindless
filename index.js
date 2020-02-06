@@ -15,7 +15,7 @@ const config = configurations[environment]
 const app = express()
 
 app.use(express.static(path.join(__dirname, "public/")))
-app.use(express.static(path.join(__dirname, "build/")))
+app.use("/js/", express.static(path.join(__dirname, "build/")))
 
 let server
 if (config.ssl) {
