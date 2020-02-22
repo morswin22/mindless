@@ -1,12 +1,16 @@
+import io from 'socket.io-client';
 import p5 from 'p5'; 
 import Login from './components/Login/Login';
-import User from './components/User/User';
+import Client from './components/Client/Client';
 
+const socket = io('http://localhost:5000')
 const logger = new Login(document.querySelector('#login'));
-const user = new User();
+const client = new Client(socket);
 
-user.login(logger)
-  .then(() => {
+client.login(logger)
+  .then(user => {
+
+    console.log(user);
 
     new p5(p => {
       p.setup = () => {

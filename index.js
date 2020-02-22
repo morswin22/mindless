@@ -31,15 +31,6 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public/")))
 app.use("/js/", express.static(path.join(__dirname, "build/")))
 
-app.post("/login", async ({ body: { name, password } }, res) => {
-  const user = await User.findOne({ name }).exec()
-  if (user && user.password === password) {
-    res.status(200).send({ user, timestamp: Date.now() });
-  } else {
-    res.sendStatus(403);
-  }
-})
-
 let server
 if (config.ssl) {
   server = https.createServer(
@@ -59,3 +50,13 @@ server.listen({ port: config.port }, () => {
     `http${config.ssl ? "s" : ""}://${config.hostname}:${config.port}/`
   )
 })
+
+const io = require('socket.io')(server)
+
+io.on('connection', socket => {
+  socket.on('login', ({ name, password }, callback) => {
+    User.findOne({ name: name }).exec((err, user) => {
+      (!err && user && user.password === password) ? callback({ user, timestamp: Date.now()}) : callback({ error: 'Bad login credentails' })
+    })
+  })
+});
