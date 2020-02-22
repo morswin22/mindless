@@ -56,7 +56,12 @@ const io = require('socket.io')(server)
 io.on('connection', socket => {
   socket.on('login', ({ name, password }, callback) => {
     User.findOne({ name: name }).exec((err, user) => {
-      (!err && user && user.password === password) ? callback({ user, timestamp: Date.now()}) : callback({ error: 'Bad login credentails' })
+      (!err && user.password === password) ? callback({ user, timestamp: Date.now()}) : callback({ error: 'Bad login credentails' })
+    })
+  })
+  socket.on('save', (user, callback) => {
+    User.updateOne({_id: user._id}, { ...user }).exec((err, user) => {
+      !err ? callback({ user, timestamp: Date.now()}) : callback({ error: 'Couldn\'t update user' })
     })
   })
 });

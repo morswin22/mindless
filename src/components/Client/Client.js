@@ -38,8 +38,15 @@ class Client {
   }
 
   save() {
-    // POST to DB and save response!
-    if (this.data) localStorage.setItem('user', JSON.stringify(this.data));
+    if (this.data) {
+      this.socket.emit('save', this.data.user, res => {
+        if (res.error) {
+          console.error(res.error);
+        } else {
+          this.data.user = res.user;
+        }
+      })
+    }
   }
 }
 
