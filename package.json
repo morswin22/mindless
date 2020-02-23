@@ -4,8 +4,8 @@
   "description": "Web app using express, mongodb, socketio, p5js",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cross-env NODE_ENV=development nodemon .\" \"webpack --mode=development --config webpack.config.js\"",
-    "production": "webpack --mode=production --config webpack.config.js && node ."
+    "start": "concurrently \"cross-env NODE_ENV=development nodemon .\" \"npm start --prefix client\"",
+    "production": "npm run build --prefix client && node ."
   },
   "repository": {
     "type": "git",
@@ -20,23 +20,21 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "concurrently": "^5.1.0",
+    "cookie": "^0.4.0",
     "cross-env": "^7.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "express-socket.io-session": "^1.3.5",
     "mongoose": "^5.8.11",
-    "p5": "^0.10.2",
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0"
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "nodemon": "^2.0.2"
   },
   "nodemonConfig": {
     "ignore": [
-      "build/*",
-      "src/*"
+      "client/*"
     ]
   }
 }
