@@ -60,7 +60,7 @@ io.on('connection', socket => {
     })
   })
   socket.on('save', (user, callback) => {
-    User.updateOne({_id: user._id}, { ...user }).exec((err, user) => {
+    User.updateOne({_id: user._id}, { ...user }).exec(err => {
       !err ? callback({ user, timestamp: Date.now()}) : callback({ error: 'Couldn\'t update user' })
     })
   })

@@ -44,6 +44,7 @@ class Client {
           console.error(res.error);
         } else {
           this.data.user = res.user;
+          localStorage.setItem('user', JSON.stringify(this.data));
         }
       })
     }
