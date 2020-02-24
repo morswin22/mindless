@@ -9,26 +9,35 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(undefined);
   const [socket, setSocket] = useState(null);
 
-  const handleUserFromSocket = ({ error, user }) => {
-    if (error) {
-      console.error(error);
-    } else {
-      setUser(user);
-    }
-  };
-
   useEffect(()=>{ 
     if (!socket) {
       const newSocket = io('http://localhost:5000')
       newSocket.on('connect', () => {
-        newSocket.emit('getSession', handleUserFromSocket)
+        newSocket.emit('authorize', localStorage.getItem('sid'), ({ error, user, sid }) => {
+          if (user) {
+            setUser(user);
+          } else {
+            setUser(null);
+            if (error) console.error(error);
+            if (sid) localStorage.setItem('sid', sid);
+          }
+        });
       })
       setSocket(newSocket);
     }
   }, [socket]);
 
   const login = (credentials) => {
-    socket.emit('login', credentials, handleUserFromSocket);
+    return new Promise((resolve, reject) => {
+      socket.emit('login', localStorage.getItem('sid'), credentials, ({ error, user }) => {
+        if (error) {
+          reject(error);
+        } else {
+          setUser(user);
+          resolve(user);
+        }
+      });
+    })
   }
 
   return socket ? (
