@@ -5,6 +5,7 @@ class SessionManager {
   constructor(config) {
     config = config || {};
     this.saveFile = config.saveFile || '.session';
+    this.lifetime = config.lifetime || 1000 * 60 * 45 * 1;
 
     this.load();
   }
@@ -12,7 +13,7 @@ class SessionManager {
   add() {
     let sid;
     do { sid = uuidv4() } while (this.find(sid));
-    const session = { sid };
+    const session = { sid, timestamp: Date.now() };
     this.sessions.push(session);
     return session;
   }
@@ -20,18 +21,21 @@ class SessionManager {
   find(sid) {
     if (!sid) return undefined;
     for (let session of this.sessions) {
-      // check if the session is expired
-      if (session.sid === sid) return session;
+      if (session.sid === sid) {
+        return (Date.now() - session.timestamp > this.lifetime) ? undefined : session;
+      }
     }
     return undefined;
   }
 
   get(sid) {
-    return this.find(sid) || this.add();
+    const session = this.find(sid) || this.add();
+    return session;
   }
 
-  save() {
-    // unregister all expired sessions
+  save(session) {
+    session.timestamp = Date.now();
+    this.sessions = this.sessions.filter(session => Date.now() - session.timestamp <= this.lifetime);
     fs.writeFileSync(this.saveFile, JSON.stringify(this.sessions));
   }
 
