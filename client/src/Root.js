@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import GlobalStyle from 'theme/GlobalStyle';
 import { ROUTES } from 'utils/Routes/Routes';
 
+import Atomic from 'atomic';
 import Login from 'views/Login/Login';
 import Game from 'views/Game/Game';
 import { UserProvider } from 'components/User/User';
@@ -13,6 +14,7 @@ const Root = () => (
     <Router>
 
       <Switch>
+        <Route exact path={ROUTES.atomic} component={Atomic} />
         <Route exact path={ROUTES.home} component={null} />
         <Route exact path={ROUTES.login} component={Login} />
         <Route exact path={ROUTES.game} component={Game} />
