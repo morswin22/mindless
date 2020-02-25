@@ -3,7 +3,8 @@ import P5Wrapper from 'react-p5-wrapper';
 import Select from './Select';
 import { useParams } from 'react-router-dom';
 
-const subviews = { /* insert atomic view-like components here */ };
+import LandmassGenerator from './LandmassGenerator/LandmassGenerator';
+const subviews = { LandmassGenerator };
 
 const Atomic = () => {
   const { id } = useParams();
