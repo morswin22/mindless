@@ -4,7 +4,8 @@ import Select from './Select';
 import { useParams } from 'react-router-dom';
 
 import LandmassGenerator from './LandmassGenerator/LandmassGenerator';
-const subviews = { LandmassGenerator };
+import ConsoleIntegration from './Console/Console';
+const subviews = { LandmassGenerator, ConsoleIntegration };
 
 const Atomic = () => {
   const { id } = useParams();
