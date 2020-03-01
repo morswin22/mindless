@@ -1,3 +1,5 @@
+import makeSketch from 'atomic/makeSketch';
+
 /* 
 
 Lacunarity = 2
@@ -24,7 +26,7 @@ amplitude = persitance^i
 
 */
 
-const LandmassGenerator = p => {
+const LandmassGenerator = () => makeSketch(p => {
 
   function getHeight(x, y, scale, octaves, persistance, lacunarity) {
     let amplitude = 1;
@@ -145,6 +147,6 @@ const LandmassGenerator = p => {
     p.updatePixels();
   }
 
-}
+});
 
 export default LandmassGenerator;
