@@ -15,19 +15,19 @@ class Console {
   constructor(p, keyboard, input) {
     this.p = p;
     this.keyboard = keyboard;
-    this.input = input;
-    this.input.addEventListener('input', ({ target: { value } }) => {
-      this.input.value = value.replace('`','');
-    });
-    this.input.addEventListener('keydown', ({ key }) => {
-      if (key === 'Enter') {
-        this.evaluate(this.input.value);
-        this.state.isOpen = false;
-        this.input.value = '';
-        this.input.blur();
-        this.input.style.display = 'none';
-      }
-    });
+    this.input = input
+      .on('input', ({ target: { value } }) => {
+        this.input.value = value.replace('`','');
+      })
+      .on('keydown', ({ key }) => {
+        if (key === 'Enter') {
+          this.evaluate(this.input.value);
+          this.state.isOpen = false;
+          this.input.value = '';
+          this.input.blur();
+          this.input.style({ display: 'none' });
+        }
+      });
     this.config = {};
     this.state = { ...DEFAULT_STATE };
     this.configurate(DEFAULT_CONFIG);
@@ -35,7 +35,7 @@ class Console {
 
   configurate(config) {
     this.config = { ...this.config, ...config };
-    if (this.input) this.input.style.color = this.config.color;
+    this.input.style({ color: this.config.color });
     this.bind();
     this.resize();
   }
@@ -46,23 +46,23 @@ class Console {
         this.state.isOpen = !this.state.isOpen;
         this.input.value = '';
         if (this.state.isOpen) {
-          this.input.style.display = 'initial';
+          this.input.style({ display: 'initial' });
           this.input.focus();
         } else {
           this.input.blur();
-          this.input.style.display = 'none';
+          this.input.style({ display: 'none' });
         }
       }
     });
   }
 
   resize() {
-    if (this.input) {
-      this.input.style.left = `${this.config.paddingSide}px`;
-      this.input.style.top = `${this.config.paddingTop}px`;
-      this.input.style.width = `${this.p.width-this.config.paddingSide*2}px`;
-      this.input.style.height = `${this.config.height}px`;
-    }
+    this.input.style({
+      left: `${this.config.paddingSide}px`,
+      top: `${this.config.paddingTop}px`,
+      width: `${this.p.width-this.config.paddingSide*2}px`,
+      height: `${this.config.height}px`,
+    });
   }
 
   evaluate(input) {

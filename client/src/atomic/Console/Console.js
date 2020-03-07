@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import Console from 'components/Console/Console';
 import Keyboard from 'components/Keyboard/Keyboard';
 import makeSketch from 'atomic/makeSketch';
-import Input from 'components/Input/Input';
+import Input, { IntegratedInput } from 'components/Input/Input';
 
 const ConsoleIntegration = () => {
   const input = useRef(null);
@@ -12,7 +12,7 @@ const ConsoleIntegration = () => {
       <Input ref={input} />
       { makeSketch(p => {  
         const keyboard = new Keyboard(p);
-        const cli = new Console(p, keyboard, input.current);
+        const cli = new Console(p, keyboard, new IntegratedInput(input.current));
       
         window.cli = cli;
       
