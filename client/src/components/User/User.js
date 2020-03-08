@@ -11,9 +11,13 @@ export const UserProvider = ({ children }) => {
 
   useEffect(()=>{ 
     if (!socket) {
-      const newSocket = io('http://localhost:5000')
+      const newSocket = io('http://localhost:5000');
+      newSocket.sessionEmit = function() {
+        const params = Array.prototype.slice.call(arguments);
+        newSocket.emit(params.shift(), localStorage.getItem('sid'), ...params);
+      }
       newSocket.on('connect', () => {
-        newSocket.emit('authorize', localStorage.getItem('sid'), ({ error, user, sid }) => {
+        newSocket.sessionEmit('authorize', ({ error, user, sid }) => {
           if (user) {
             setUser(user);
           } else {
@@ -29,7 +33,7 @@ export const UserProvider = ({ children }) => {
 
   const login = (credentials) => {
     return new Promise((resolve, reject) => {
-      socket.emit('login', localStorage.getItem('sid'), credentials, ({ error, user }) => {
+      socket.sessionEmit('login', credentials, ({ error, user }) => {
         if (error) {
           reject(error);
         } else {

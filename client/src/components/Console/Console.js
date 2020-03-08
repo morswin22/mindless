@@ -11,8 +11,12 @@ const DEFAULT_STATE = {
   isOpen: false,
 };
 
+const DEFAULT_COMMANDS = {
+  hello: name => console.log(`Hello ${ name || 'World!' }`),
+}
+
 class Console {
-  constructor(p, keyboard, input) {
+  constructor(p, keyboard, input, commands) {
     this.p = p;
     this.keyboard = keyboard;
     this.input = input
@@ -31,6 +35,8 @@ class Console {
     this.config = {};
     this.state = { ...DEFAULT_STATE };
     this.configurate(DEFAULT_CONFIG);
+    this.commands = { ...DEFAULT_COMMANDS };
+    this.setCommands(commands);
   }
 
   configurate(config) {
@@ -65,10 +71,14 @@ class Console {
     });
   }
 
+  setCommands(commands) {
+    this.commands = { ...this.commands, ...commands };
+  }
+
   evaluate(input) {
     const args = input.split(' ');
-    const command = args.shift();
-    console.log(command, args);
+    const command = this.commands[args.shift()] || (() => console.warn(`Unknown command`));
+    command( ...args );
   }
 
   draw() {

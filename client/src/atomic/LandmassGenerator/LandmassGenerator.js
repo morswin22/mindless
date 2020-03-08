@@ -1,4 +1,4 @@
-import makeSketch from 'atomic/makeSketch';
+import { makeSketch } from 'atomic/utils';
 
 /* 
 
