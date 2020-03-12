@@ -1,5 +1,5 @@
 const DEFAULT_CONFIG = {
-  size: 20,
+  size: 100,
   stroke: '#ddd',
   fill: null
 };
@@ -16,11 +16,11 @@ class Grid {
   }
 
   resize() {
-    this.n = Math.floor(this.p.width / this.config.size);
-    this.m = Math.floor(this.p.height / this.config.size);
+    this.n = Math.floor(this.p.width / this.config.size) + 1;
+    this.m = Math.floor(this.p.height / this.config.size) + 1;
   }
 
-  draw() {
+  draw(camera) {
     if (this.config.stroke) {
       this.p.stroke(this.p.color(this.config.stroke));
     } else {
@@ -33,13 +33,26 @@ class Grid {
       this.p.noFill();
     }
     
+    const x = camera.pos.x - this.p.width/2;
+    const y = camera.pos.y - this.p.height/2;
+
     for (let i = 0; i < this.n; i++) {
-      this.p.line(i*this.config.size, 0, i*this.config.size, this.p.height);
+      this.p.line(i*this.config.size + x - x % this.config.size, y, i*this.config.size + x - x % this.config.size, camera.pos.y + this.p.height/2);
     }
 
     for (let j = 0; j < this.m; j++) {
-      this.p.line(0, j*this.config.size, this.p.width, j*this.config.size);
+      this.p.line(x, j*this.config.size + y - y % this.config.size, camera.pos.x + this.p.width/2, j*this.config.size + y - y % this.config.size);
     }
+    // const x = camera.pos.x - this.p.width/2;
+    // const y = camera.pos.y - this.p.height/2;
+
+    // for (let i = 0; i < this.n; i++) {
+    //   this.p.line(i*this.config.size + x - x % this.config.size, y, i*this.config.size + x - x % this.config.size, camera.pos.y + this.p.height/2);
+    // }
+
+    // for (let j = 0; j < this.m; j++) {
+    //   this.p.line(x, j*this.config.size + y - y % this.config.size, camera.pos.x + this.p.width/2, j*this.config.size + y - y % this.config.size);
+    // }
   }
 }
 

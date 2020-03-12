@@ -11,6 +11,7 @@ class Keyboard {
     p.keyReleased = () => {
       this.emit('release', p.key);
     };
+    this.unlocked = true;
   }
 
   on(event, callback) {
@@ -30,6 +31,10 @@ class Keyboard {
     } else if (event === 'release') {
       this.keyboard[key] = false;
     }
+  }
+
+  pressed(key) {
+    return this.unlocked && this.keyboard[key];
   }
 }
 

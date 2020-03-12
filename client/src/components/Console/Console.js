@@ -30,6 +30,7 @@ class Console {
           this.input.value = '';
           this.input.blur();
           this.input.style({ display: 'none' });
+          this.keyboard.unlocked = true;
         }
       });
     this.config = {};
@@ -54,9 +55,11 @@ class Console {
         if (this.state.isOpen) {
           this.input.style({ display: 'initial' });
           this.input.focus();
+          this.keyboard.unlocked = false;
         } else {
           this.input.blur();
           this.input.style({ display: 'none' });
+          this.keyboard.unlocked = true;
         }
       }
     });
@@ -81,12 +84,12 @@ class Console {
     command( ...args );
   }
 
-  draw() {
+  draw(camera) {
     if (this.state.isOpen) {
       this.p.rectMode(this.p.CORNERS);
       this.p.noStroke();
       this.p.fill(this.p.color(this.config.background));
-      this.p.rect(this.config.paddingSide, this.config.paddingTop, this.p.width-this.config.paddingSide, this.config.paddingTop + this.config.height);
+      this.p.rect(this.config.paddingSide - this.p.width*.5 + camera.pos.x, this.config.paddingTop - this.p.height*.5 + camera.pos.y, this.p.width*.5  + camera.pos.x - this.config.paddingSide, this.config.paddingTop + this.config.height - this.p.height*.5  + camera.pos.y);
     }
   }
 }
