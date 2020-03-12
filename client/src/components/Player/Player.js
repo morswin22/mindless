@@ -19,8 +19,6 @@ class Player extends Entity {
     super(p);
     this.keyboard = keyboard;
     this.configurate(DEFAULT_CONFIG);
-
-    console.log(this.config);
   }
 
   update() {

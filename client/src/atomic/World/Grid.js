@@ -9,7 +9,7 @@ import Entity from 'components/Entity/Entity';
 import Player from 'components/Player/Player';
 
 const GridIntegration = () => {
-  const { loading, user } = useAuthorization(user => user);
+  const { loading, user, logout } = useAuthorization(user => user);
   const input = useRef(null);
 
   return !loading && user ? (
@@ -27,6 +27,7 @@ const GridIntegration = () => {
         const cli = new Console(p, keyboard, new IntegratedInput(input.current), {
           "blob-move": (x, y) => blob.pos.add(Number(x), Number(y)),
           "blob-position": () => console.log(blob.pos.x, blob.pos.y),
+          "logout": logout,
         });
             
         p.setup = () => {

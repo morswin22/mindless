@@ -44,11 +44,17 @@ export const UserProvider = ({ children }) => {
     })
   }
 
+  const logout = () => {
+    localStorage.removeItem('sid');
+    setSocket(null);
+  }
+
   return socket ? (
     <UserContext.Provider value={{
       user,
       socket,
-      login
+      login,
+      logout,
     }}>
       { children }
     </UserContext.Provider>
@@ -56,7 +62,7 @@ export const UserProvider = ({ children }) => {
 }
 
 export const useAuthorization = ( condition ) => {
-  const { user } = useContext(UserContext);
+  const { user, login, logout } = useContext(UserContext);
   const history = useHistory();
 
   useEffect(() => {
@@ -66,7 +72,9 @@ export const useAuthorization = ( condition ) => {
   return {
     loading: user === undefined,
     error: user === null,
-    user
+    user, 
+    login, 
+    logout
   }
 }
 
