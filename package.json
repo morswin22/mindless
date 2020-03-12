@@ -1,6 +1,6 @@
 {
   "name": "mindless",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Web app using express, mongodb, socketio, p5js",
   "main": "index.js",
   "scripts": {
