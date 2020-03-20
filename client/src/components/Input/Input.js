@@ -7,6 +7,7 @@ const Input = styled.input`
   border: 0;
   margin: 0;
   padding: 0;
+  display: none;
 `;
 
 export class IntegratedInput {

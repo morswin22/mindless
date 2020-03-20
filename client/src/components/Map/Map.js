@@ -21,6 +21,8 @@ class Map extends Grid {
   }
 
   generate(config) {
+    if (config && config.returnOnly) return mapGenerate(this.p, config || {});
+    
     [this.map, this.mapSeed] = mapGenerate(this.p, config || {});
     this.mapConstrains = {
       x: {
