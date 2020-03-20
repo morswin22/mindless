@@ -37,7 +37,10 @@ class Console {
     this.state = { ...DEFAULT_STATE };
     this.configurate(DEFAULT_CONFIG);
     this.commands = { ...DEFAULT_COMMANDS };
-    this.setCommands(commands);
+    this.setCommands({ 
+      ...commands,
+      help: () => console.log(this.commands),
+    });
   }
 
   configurate(config) {
