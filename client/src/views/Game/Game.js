@@ -3,7 +3,8 @@ import P5Wrapper from 'react-p5-wrapper';
 import Console from 'components/Console/Console';
 import Keyboard from 'components/Keyboard/Keyboard';
 import { resize, draw, update } from 'atomic/utils';
-import Input, { IntegratedInput } from 'components/Input/Input';
+import IntegratedElement from 'components/Element/Element';
+import Input from 'components/Element/Input';
 import { useAuthorization } from 'components/User/User';
 import Grid from 'components/Grid/Grid';
 import Entity from 'components/Entity/Entity';
@@ -25,7 +26,7 @@ const Game = () => {
 
         const grid = new Grid(p, player);
 
-        const cli = new Console(p, keyboard, new IntegratedInput(input.current));
+        const cli = new Console(p, keyboard, new IntegratedElement(input.current));
             
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);

@@ -155,8 +155,14 @@ const mapGenerate = (p, config) => {
       }
     }
   }
+  // Generate spawn point
+  let spawnpoint = { x: 0, y: 0 };
+  do {
+    spawnpoint.x = Math.floor(p.random(0, width));
+    spawnpoint.y = Math.floor(p.random(0, height));
+  } while (heightMap[spawnpoint.x][spawnpoint.y] !== DEFAULT_TYPES.grass);
   
-  return [heightMap, seed];
+  return [heightMap, seed, spawnpoint];
 
 };
 

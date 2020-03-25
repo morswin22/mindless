@@ -17,14 +17,6 @@ class Manager {
   hide(wid) {
     if (this.windows[wid]) this.windows[wid].isOpen = false;
   }
-
-  resize() {
-    this.windows.forEach(window => window.resize());
-  }
-
-  draw(camera) {
-    this.windows.filter(({ isOpen }) => isOpen).forEach(window => window.draw(camera));
-  }
 }
 
 export default Manager;

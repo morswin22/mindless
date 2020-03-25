@@ -2,7 +2,8 @@ import React, { useRef } from 'react';
 import Console from 'components/Console/Console';
 import Keyboard from 'components/Keyboard/Keyboard';
 import { makeSketch } from 'atomic/utils';
-import Input, { IntegratedInput } from 'components/Input/Input';
+import IntegratedElement from 'components/Element/Element';
+import Input from 'components/Element/Input';
 import { useAuthorization } from 'components/User/User';
 
 const ConsoleIntegration = () => {
@@ -14,7 +15,7 @@ const ConsoleIntegration = () => {
       <Input ref={input} />
       { makeSketch(p => {  
         const keyboard = new Keyboard(p);
-        const cli = new Console(p, keyboard, new IntegratedInput(input.current), {
+        const cli = new Console(p, keyboard, new IntegratedElement(input.current), {
           user: () => console.log(user.name),
         });
       

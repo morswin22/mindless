@@ -22,8 +22,8 @@ class Map extends Grid {
 
   generate(config) {
     if (config && config.returnOnly) return mapGenerate(this.p, config || {});
-    
-    [this.map, this.mapSeed] = mapGenerate(this.p, config || {});
+
+    [this.map, this.mapSeed, this.spawnpoint] = mapGenerate(this.p, config || {});
     this.mapConstrains = {
       x: {
         min: 0,
@@ -34,6 +34,10 @@ class Map extends Grid {
         max: this.map[0].length,
       }
     }
+  }
+
+  isSpawnable(x, y) {
+    return this.map && this.mapConstrains && !(x < this.mapConstrains.x.min || y < this.mapConstrains.y.min || x >= this.mapConstrains.x.max || y >= this.mapConstrains.y.max) && this.map[x][y] === DEFAULT_TYPES.grass;
   }
 
   draw(camera) {

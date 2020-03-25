@@ -13,6 +13,7 @@ class Grid {
 
   configurate(config) {
     this.config = { ...this.config, ...config };
+    this.resize();
   }
 
   resize() {

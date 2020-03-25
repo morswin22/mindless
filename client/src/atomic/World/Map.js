@@ -2,7 +2,8 @@ import React, { useRef } from 'react';
 import Console from 'components/Console/Console';
 import Keyboard from 'components/Keyboard/Keyboard';
 import { makeSketch, resize, draw, update } from 'atomic/utils';
-import Input, { IntegratedInput } from 'components/Input/Input';
+import IntegratedElement from 'components/Element/Element';
+import Input from 'components/Element/Input';
 import { useAuthorization } from 'components/User/User';
 import Map from 'components/Map/Map';
 import Entity from 'components/Entity/Entity';
@@ -24,7 +25,7 @@ const MapIntegration = () => {
 
         const map = new Map(p);
 
-        const cli = new Console(p, keyboard, new IntegratedInput(input.current), {
+        const cli = new Console(p, keyboard, new IntegratedElement(input.current), {
           "blob-move": (x, y) => blob.pos.add(Number(x), Number(y)),
           "blob-position": () => console.log(blob.pos.x, blob.pos.y),
           "logout": logout,

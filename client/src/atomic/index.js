@@ -6,8 +6,8 @@ import LandmassGenerator from './LandmassGenerator/LandmassGenerator';
 import ConsoleIntegration from './Console/Console';
 import GridIntegration from './World/Grid';
 import MapIntegration from './World/Map';
-import WorldCreator from './World/Creator';
-const subviews = { LandmassGenerator, ConsoleIntegration, GridIntegration, MapIntegration, WorldCreator };
+import WorldCreatorIntegration from './World/Creator';
+const subviews = { LandmassGenerator, ConsoleIntegration, GridIntegration, MapIntegration, WorldCreatorIntegration };
 
 const Atomic = () => {
   const { id } = useParams();
