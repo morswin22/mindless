@@ -1,7 +1,7 @@
 export default class IntegratedElement {
   constructor(elementRef, hide) {
     this.element = elementRef;
-    if (hide === undefined || hide === true) {
+    if (elementRef && (hide === undefined || hide === true)) {
       this.style({ display: 'none!' });
     }
   }
