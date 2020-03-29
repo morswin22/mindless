@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Window from './Window';
-import IntegratedElement from 'components/Element/Element';
 import Button from 'components/Element/Button';
 
 const Wrapper = styled.div`
@@ -29,35 +28,43 @@ const MenuButton = styled(Button)`
   }
 `;
 
-export const MMWindow = React.forwardRef((props, ref) => (
-  <Wrapper ref={el => ref.current.main = new IntegratedElement(el)}>
-    <MenuButton ref={el => ref.current.play = new IntegratedElement(el, false)}>
-      Play
-    </MenuButton>
-    <MenuButton ref={el => ref.current.settings = new IntegratedElement(el, false)}>
-      Settings
-    </MenuButton>
-    <MenuButton ref={el => ref.current.account = new IntegratedElement(el, false)}>
-      Account
-    </MenuButton>
-    <MenuButton ref={el => ref.current.logout = new IntegratedElement(el, false)}>
-      Logout
-    </MenuButton>
-  </Wrapper>
-));
-
-const DEFAULT_CONFIG = {};
+const DEFAULT_CONFIG = {
+  request: ['keyboard', 'logout', 'worldCreator']
+};
 
 class MainMenu extends Window {
-  constructor(p, ref, keyboard, logout) {
-    super(p, ref);
-    this.keyboard = keyboard;
-    this.logout = logout;
+  constructor() {
+    super();
     this.configurate(DEFAULT_CONFIG);
 
-    this.ref.current.logout
+    this.Component = ({ set }) => (
+      <Wrapper ref={ set('main') }>
+        <MenuButton ref={ set('play') }>
+          Play
+        </MenuButton>
+        <MenuButton ref={ set('settings') }>
+          Settings
+        </MenuButton>
+        <MenuButton ref={ set('account') }>
+          Account
+        </MenuButton>
+        <MenuButton ref={ set('logout') }>
+          Logout
+        </MenuButton>
+      </Wrapper>
+    );
+  }
+
+  onSupply() {
+    this.ref.get('logout')
       .on('click', () => {
         this.logout();
+      });
+    
+    this.ref.get('play')
+      .on('click', () => {
+        this.hide();
+        this.worldCreator.show();
       })
   }
 

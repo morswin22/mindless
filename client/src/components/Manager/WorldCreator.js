@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Window from './Window';
-import IntegratedElement from 'components/Element/Element';
 import Input from 'components/Element/Input';
 import Button from 'components/Element/Button';
 import p5 from 'p5';
@@ -52,54 +51,44 @@ const Canvas = styled.div`
   justify-content: center;
 `;
 
-export const WCWindow = React.forwardRef((props, ref) => (
-  <Wrapper ref={el => ref.current.main = new IntegratedElement(el)}>
-    <InputsGroup>
-      <StyledInput 
-        ref={el => ref.current.name = new IntegratedElement(el, false)} 
-        placeholder="Name" 
-      />
-      <StyledInput 
-        ref={el => ref.current.seed = new IntegratedElement(el, false)} 
-        placeholder="Seed" 
-      />
-    </InputsGroup>
-    <GenerateButton 
-      ref={el => ref.current.generate = new IntegratedElement(el, false)}
-    >
-      Generate a preview
-    </GenerateButton>
-    <Canvas 
-      ref={el => ref.current.display = new IntegratedElement(el, false)} 
-    />
-    <CreateButton 
-      ref={el => ref.current.submit = new IntegratedElement(el, false)}
-    >
-      Create
-    </CreateButton>
-  </Wrapper>
-));
-
-const DEFAULT_CONFIG = {};
+const DEFAULT_CONFIG = {
+  request: ['keyboard', 'map']
+};
 
 class WorldCreator extends Window {
-  constructor(p, ref, keyboard, map) {
-    super(p, ref);
-    this.keyboard = keyboard;
-    this.map = map;
+  constructor() {
+    super();
     this.configurate(DEFAULT_CONFIG);
 
     this.data = {};
 
-    this.ref.current.generate
+    this.Component = ({ set }) => (
+      <Wrapper ref={ set('main') }>
+        <InputsGroup>
+          <StyledInput ref={ set('name') } placeholder="Name" />
+          <StyledInput ref={ set('seed') } placeholder="Seed" />
+        </InputsGroup>
+        <GenerateButton ref={ set('generate') }>
+          Generate a preview
+        </GenerateButton>
+        <Canvas ref={ set('display') } />
+        <CreateButton ref={ set('submit') }>
+          Create
+        </CreateButton>
+      </Wrapper>
+    );
+  }
+
+  onSupply() {
+    this.ref.get('generate')
       .on('click', () => this.generatePreview());
 
-    this.ref.current.submit
+    this.ref.get('submit')
       .on('click', () => {
-        this.data.name = this.ref.current.name.value.trim()
+        this.data.name = this.ref.get('name').value.trim()
         if (this.data.name) {
           if (!this.data.seed || !this.data.map || typeof this.data.map === 'string') {
-            this.data.seed = isNaN(this.ref.current.seed.value) ? this.ref.current.seed.value.trim() : Number(this.ref.current.seed.value);
+            this.data.seed = isNaN(this.ref.get('seed').value) ? this.ref.get('seed').value.trim() : Number(this.ref.get('seed').value);
             if (this.data.seed) {
               this.data.map = this.map.generate({ seed: this.data.seed, returnOnly: true })[0];
               this.data.spawnpoint = this.map.spawnpoint;
@@ -121,7 +110,7 @@ class WorldCreator extends Window {
 
   onOpen() {
     this.keyboard.unlocked = false;
-    this.ref.current.seed.value = Math.floor(this.p.random(1, 99999));
+    this.ref.get('seed').value = Math.floor(Math.random() * 99999);
     setTimeout(() => this.generatePreview(), 100);
   }
 
@@ -130,7 +119,7 @@ class WorldCreator extends Window {
   }
 
   generatePreview() {
-    this.data.seed = isNaN(this.ref.current.seed.value) ? this.ref.current.seed.value.trim() : Number(this.ref.current.seed.value);
+    this.data.seed = isNaN(this.ref.get('seed').value) ? this.ref.get('seed').value.trim() : Number(this.ref.get('seed').value);
     if (this.data.seed) {
       if (this.preview) this.preview.canvas.remove();
       this.preview = new p5(p => {
@@ -165,7 +154,7 @@ class WorldCreator extends Window {
           }
         }
         
-      }, this.ref.current.display.element);
+      }, this.ref.get('display').element);
     }
   }
 }

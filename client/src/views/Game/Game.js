@@ -6,47 +6,59 @@ import { resize, draw, update } from 'atomic/utils';
 import IntegratedElement from 'components/Element/Element';
 import Input from 'components/Element/Input';
 import { useAuthorization } from 'components/User/User';
-import Grid from 'components/Grid/Grid';
-import Entity from 'components/Entity/Entity';
+import Map from 'components/Map/Map';
 import Player from 'components/Player/Player';
+import Manager from 'components/Manager/Manager';
+import WorldCreator from 'components/Manager/WorldCreator';
+import MainMenu from 'components/Manager/MainMenu';
 
-const Game = () => {
-  const { loading, user } = useAuthorization(user => user);
-  const input = useRef(null);
+const WorldCreatorIntegration = () => {
+  const { loading, user, logout } = useAuthorization(user => user);
+  const consoleInput = useRef(null);
+
+  const manager = new Manager();
+  const mainMenu = manager.add(new MainMenu());
+  const worldCreator = manager.add(new WorldCreator());
 
   return !loading && user ? (
     <>
-      <Input ref={input} />
+      <Input ref={consoleInput} />
+      { manager.render() }
       <P5Wrapper sketch={p => {  
         const keyboard = new Keyboard(p);
 
-        const blob = new Entity(p);
-        blob.pos.set(200, 100);
         const player = new Player(p, keyboard);
+        player.pos.set(5050, 4150);
 
-        const grid = new Grid(p, player);
+        const map = new Map(p);
 
-        const cli = new Console(p, keyboard, new IntegratedElement(input.current));
+        manager.supply({ p, keyboard, map, logout, worldCreator });
+
+        const cli = new Console(p, keyboard, new IntegratedElement(consoleInput.current), {
+          "logout": logout,
+          "tp": (x, y) => player.pos.set(Number(x), Number(y)),
+        });
             
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
           p.windowResized();
+          mainMenu.show();
         }
       
         p.draw = () => {
+          update(player);
           p.background(255);
           p.translate(p.width/2 - player.pos.x, p.height/2 - player.pos.y);
-          update(blob, player);
-          draw(player)(grid, blob, player, cli);
+          draw(player)(map, player, cli);
         }
 
         p.windowResized = () => {
           p.resizeCanvas(p.windowWidth, p.windowHeight);
-          resize(cli, grid);
+          resize(cli, map);
         }
       }} />
     </>
   ): null;
-};
+}
 
-export default Game;
+export default WorldCreatorIntegration;

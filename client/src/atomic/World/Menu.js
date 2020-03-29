@@ -8,20 +8,21 @@ import { useAuthorization } from 'components/User/User';
 import Map from 'components/Map/Map';
 import Player from 'components/Player/Player';
 import Manager from 'components/Manager/Manager';
-import WorldCreator, { WCWindow } from 'components/Manager/WorldCreator';
-import MainMenu, { MMWindow } from 'components/Manager/MainMenu';
+import WorldCreator from 'components/Manager/WorldCreator';
+import MainMenu from 'components/Manager/MainMenu';
 
 const MainMenuIntegration = () => {
   const { loading, user, logout } = useAuthorization(user => user);
   const consoleInput = useRef(null);
-  const WCRef = useRef({});
-  const MMRef = useRef({});
+  
+  const manager = new Manager();
+  const mainMenu = manager.add(new MainMenu());
+  const worldCreator = manager.add(new WorldCreator());
 
   return !loading && user ? (
     <>
       <Input ref={consoleInput} />
-      <WCWindow ref={WCRef} />
-      <MMWindow ref={MMRef} />
+      { manager.render() }
       { makeSketch(p => {  
         const keyboard = new Keyboard(p);
 
@@ -30,9 +31,7 @@ const MainMenuIntegration = () => {
 
         const map = new Map(p);
 
-        const manager = new Manager();
-        const worldCreator = manager.add(new WorldCreator(p, WCRef, keyboard, map));
-        const mainMenu = manager.add(new MainMenu(p, MMRef, keyboard, logout));
+        manager.supply({ keyboard, map, logout, worldCreator });
 
         window.manager = manager;
 

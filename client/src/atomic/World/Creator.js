@@ -8,17 +8,19 @@ import { useAuthorization } from 'components/User/User';
 import Map from 'components/Map/Map';
 import Player from 'components/Player/Player';
 import Manager from 'components/Manager/Manager';
-import WorldCreator, { WCWindow } from 'components/Manager/WorldCreator';
+import WorldCreator from 'components/Manager/WorldCreator';
 
 const WorldCreatorIntegration = () => {
   const { loading, user, logout } = useAuthorization(user => user);
   const consoleInput = useRef(null);
-  const WCRef = useRef({});
+  
+  const manager = new Manager();
+  const worldCreator = manager.add(new WorldCreator());
 
   return !loading && user ? (
     <>
       <Input ref={consoleInput} />
-      <WCWindow ref={WCRef} />
+      { manager.render() }
       { makeSketch(p => {  
         const keyboard = new Keyboard(p);
 
@@ -27,8 +29,7 @@ const WorldCreatorIntegration = () => {
 
         const map = new Map(p);
 
-        const manager = new Manager();
-        const worldCreator = manager.add(new WorldCreator(p, WCRef, keyboard, map));
+        manager.supply({ keyboard, map });
 
         window.manager = manager;
 
