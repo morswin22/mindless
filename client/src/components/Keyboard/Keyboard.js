@@ -5,13 +5,26 @@ class Keyboard {
       press: [],
       release: []
     };
+
     p.keyPressed = () => {
       this.emit('press', p.key);
     };
     p.keyReleased = () => {
       this.emit('release', p.key);
     };
+
+    this.locks = [];
     this.unlocked = true;
+  }
+
+  lock(name) {
+    if (!this.locks.includes(name)) this.locks.push(name);
+    this.unlocked = false;
+  }
+
+  unlock(name) {
+    this.locks = this.locks.filter(value => value !== name);
+    this.unlocked = !this.locks.length;
   }
 
   on(event, callback) {

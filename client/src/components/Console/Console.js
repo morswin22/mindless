@@ -30,7 +30,7 @@ class Console {
           this.input.value = '';
           this.input.blur();
           this.input.style({ display: 'none' });
-          this.keyboard.unlocked = true;
+          this.keyboard.unlock(this.constructor.name);
         }
       });
     this.config = {};
@@ -58,11 +58,11 @@ class Console {
         if (this.state.isOpen) {
           this.input.style({ display: 'initial' });
           this.input.focus();
-          this.keyboard.unlocked = false;
+          this.keyboard.lock(this.constructor.name)
         } else {
           this.input.blur();
           this.input.style({ display: 'none' });
-          this.keyboard.unlocked = true;
+          this.keyboard.unlock(this.constructor.name)
         }
       }
     });

@@ -69,11 +69,11 @@ class MainMenu extends Window {
   }
 
   onOpen() {
-    this.keyboard.unlocked = false;
+    this.keyboard.lock(this.constructor.name);
   }
 
   onClose() {
-    this.keyboard.unlocked = true;
+    this.keyboard.unlock(this.constructor.name);
   }
 }
   

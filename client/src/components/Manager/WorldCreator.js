@@ -109,13 +109,13 @@ class WorldCreator extends Window {
   }
 
   onOpen() {
-    this.keyboard.unlocked = false;
+    this.keyboard.lock(this.constructor.name);
     this.ref.get('seed').value = Math.floor(Math.random() * 99999);
     setTimeout(() => this.generatePreview(), 100);
   }
 
   onClose() {
-    this.keyboard.unlocked = true;
+    this.keyboard.unlock(this.constructor.name);
   }
 
   generatePreview() {
