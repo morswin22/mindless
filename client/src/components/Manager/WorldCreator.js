@@ -129,28 +129,36 @@ class WorldCreator extends Window {
 
         p.setup = () => {
           p.createCanvas(500, 500);
+          p.fill('#ffffff');
           map.configurate({ size: 1 });
-          map.generate({ seed: this.data.seed });
-          this.data.map = map.map;
-          this.data.spawnpoint = map.spawnpoint;
-          map.draw({ pos: { x: p.width/2, y: p.height/2 } });
-          preview = p.get(0, 0, p.width, p.height);
+          map.generate({ seed: this.data.seed })
+            .then(() => {
+              [this.data.map, this.data.spawnpoint] = [map.map, map.spawnpoint];
+              map.drawPreview();
+            })
         };
 
         p.draw = () => {
-          p.image(preview, 0, 0);
-          p.noStroke();
-          p.fill(p.color('#00ff80'));
-          p.ellipse(p.mouseX, p.mouseY, 5);
-          p.ellipse(map.spawnpoint.x, map.spawnpoint.y, 5 + (p.sin(p.frameCount/p.TWO_PI) + 1) * 2)
+          if (preview) {
+            p.image(preview, 0, 0);
+            p.noStroke();
+            p.fill('#00ff80');
+            p.ellipse(p.mouseX, p.mouseY, 5);
+            p.ellipse(map.spawnpoint.x, map.spawnpoint.y, 5 + (p.sin(p.frameCount/p.TWO_PI) + 1) * 2)
+          } else if (map.previewData) {
+            if (map.preview()) preview = p.get(0, 0, p.width, p.height);
+          } else {
+            p.clear();
+            p.textAlign(p.CENTER, p.CENTER);
+            p.text('Loading', 0, 0, p.width, p.height);
+          }
         };
 
         p.mousePressed = () => {
           const x = Math.round(p.mouseX);
           const y = Math.round(p.mouseY);
           if (map.isSpawnable(x, y)) {
-            map.spawnpoint = { x, y };
-            this.data.spawnpoint = map.spawnpoint;
+            this.data.spawnpoint = map.spawnpoint = { x, y };
           }
         }
         

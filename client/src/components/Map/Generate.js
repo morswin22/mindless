@@ -10,6 +10,7 @@ export const DEFAULT_TYPES = {
 };
 
 const DEFAULT_CONFIG = {
+  tick: 20,
   seed: 0,
   scale: 200,
   octaves: 3,
@@ -58,7 +59,7 @@ const getHeight = (p, x, y, scale, octaves, persistance, lacunarity) => {
   return p.map(noiseHeight, -1, 1, 0, 1);
 }
 
-const mapGenerate = (p, config) => {
+const mapGenerate = (p, config) => new Promise((resolve, reject) => {
   
   config = {...DEFAULT_CONFIG, ...config};
   const { 
@@ -83,87 +84,113 @@ const mapGenerate = (p, config) => {
   p.noiseSeed(seed);
   p.randomSeed(seed);
 
-  let min = 1;
+  let min = 1
   let max = 0;
-
-  // Get min and max height for re-mapping
-  for (let x = 0; x < width; x++) {
-    for (let y = 0; y < height; y++) {
-      let z = getHeight(p, x, y, scale, octaves, persistance, lacunarity);
-      if (z < min) min = z;
-      if (z > max) max = z;
-    }
-  }
-
   const heightMap = [];
-
-  // Generate height map
-  for (let x = 0; x < width; x++) {
-    heightMap.push([]);
-    for (let y = 0; y < height; y++) {
-      let z = p.map(getHeight(p, x, y, scale, octaves, persistance, lacunarity), min, max, 0, 1);
-      let type;
-
-      if (z < ocean) {
-        type = DEFAULT_TYPES.ocean;
-      } else if (z < water) {
-        type = DEFAULT_TYPES.water;
-      } else if (z < sand) {
-        type = DEFAULT_TYPES.sand;
-      } else if (z < grass) {
-        type = DEFAULT_TYPES.grass;
-      } else {
-        type = DEFAULT_TYPES.stone;
+  const spawnpoint = { x: 0, y: 0};
+  
+  const callStack = [
+    () => {
+      // Get min and max height for re-mapping
+      // console.time('getMinMax');
+      for (let x = 0; x < width; x++) {
+        heightMap.push([]);
+        for (let y = 0; y < height; y++) {
+          let z = getHeight(p, x, y, scale, octaves, persistance, lacunarity);
+          if (z < min) min = z;
+          if (z > max) max = z;
+          heightMap[x].push(z);
+        }
       }
-
-      heightMap[x].push(type);
-    }
-  }
-  // Generate structures
-  for (let structureName in structures) {
-    const structure = structures[structureName];
-    const count = Math.floor(typeof structure.count === 'object' ? p.random(structure.count[0], structure.count[1]) : structure.count);
-    for (let l = 0; l < count; l++) {
-      let structureSize;
-      let positive;
-      let x, y;
-      do {
-        positive = true;
-        structureSize = Math.floor(typeof structure.size === 'object' ? p.random(structure.size[0], structure.size[1]) : structure.size);
-        x = Math.floor(p.random(1, width - 1));
-        y = Math.floor(p.random(1, height - 1));
-        let z = p.map(getHeight(p, x, y, scale, octaves, persistance, lacunarity), min, max, 0, 1);
-        if (z >= sand && z < grass) {
+      // console.timeEnd('getMinMax');
+    },
+    () => {
+      // Generate height map
+      // console.time('generateHeightMap');
+      for (let x = 0; x < width; x++) {
+        for (let y = 0; y < height; y++) {
+          let z = p.map(heightMap[x][y], min, max, 0, 1);
+          let type;
+    
+          if (z < ocean) {
+            type = DEFAULT_TYPES.ocean;
+          } else if (z < water) {
+            type = DEFAULT_TYPES.water;
+          } else if (z < sand) {
+            type = DEFAULT_TYPES.sand;
+          } else if (z < grass) {
+            type = DEFAULT_TYPES.grass;
+          } else {
+            type = DEFAULT_TYPES.stone;
+          }
+    
+          heightMap[x][y] = type;
+        }
+      }
+      // console.timeEnd('generateHeightMap');
+    }, 
+    () => {
+      // Generate structures
+      // console.time('generateStructures');
+      for (let structureName in structures) {
+        const structure = structures[structureName];
+        const count = Math.floor(typeof structure.count === 'object' ? p.random(structure.count[0], structure.count[1]) : structure.count);
+        for (let l = 0; l < count; l++) {
+          let structureSize;
+          let positive;
+          let x, y;
+          do {
+            positive = true;
+            structureSize = Math.floor(typeof structure.size === 'object' ? p.random(structure.size[0], structure.size[1]) : structure.size);
+            x = Math.floor(p.random(1, width - 1));
+            y = Math.floor(p.random(1, height - 1));
+            let z = p.map(getHeight(p, x, y, scale, octaves, persistance, lacunarity), min, max, 0, 1);
+            if (z >= sand && z < grass) {
+              for (let i = x - structureSize; i <= x + structureSize; i++) {
+                for (let j = y - structureSize; j <= y + structureSize; j++) {
+                  if (p.dist(x,y,i,j) > structureSize+0.5) continue;
+                  let k = p.map(getHeight(p, i, j, scale, octaves, persistance, lacunarity), min, max, 0, 1);
+                  if (!(k >= sand && k < grass)) {
+                    positive = false;
+                  }
+                }
+              }
+            } else {
+              positive = false;
+            }
+          } while (!positive)
           for (let i = x - structureSize; i <= x + structureSize; i++) {
             for (let j = y - structureSize; j <= y + structureSize; j++) {
               if (p.dist(x,y,i,j) > structureSize+0.5) continue;
-              let k = p.map(getHeight(p, i, j, scale, octaves, persistance, lacunarity), min, max, 0, 1);
-              if (!(k >= sand && k < grass)) {
-                positive = false;
-              }
+              if (heightMap[i] && heightMap[i][j]) heightMap[i][j] = DEFAULT_TYPES[structureName];
             }
           }
-        } else {
-          positive = false;
-        }
-      } while (!positive)
-      for (let i = x - structureSize; i <= x + structureSize; i++) {
-        for (let j = y - structureSize; j <= y + structureSize; j++) {
-          if (p.dist(x,y,i,j) > structureSize+0.5) continue;
-          if (heightMap[i] && heightMap[i][j]) heightMap[i][j] = DEFAULT_TYPES[structureName];
         }
       }
+      // console.timeEnd('generateStructures');
+    }, () => {
+      // Generate spawn point
+      // console.time('getSpawnpoint');
+      do {
+        spawnpoint.x = Math.floor(p.random(0, width));
+        spawnpoint.y = Math.floor(p.random(0, height));
+      } while (heightMap[spawnpoint.x][spawnpoint.y] !== DEFAULT_TYPES.grass);
+      // console.timeEnd('getSpawnpoint');
+    }, () => {
+      // console.timeEnd('done');
+      resolve({ map: heightMap, mapSeed: seed, spawnpoint });
     }
-  }
-  // Generate spawn point
-  let spawnpoint = { x: 0, y: 0 };
-  do {
-    spawnpoint.x = Math.floor(p.random(0, width));
-    spawnpoint.y = Math.floor(p.random(0, height));
-  } while (heightMap[spawnpoint.x][spawnpoint.y] !== DEFAULT_TYPES.grass);
-  
-  return [heightMap, seed, spawnpoint];
+  ];
 
-};
+  const cycler = () => {
+    callStack.shift()();
+    if (callStack.length) setTimeout(cycler, config.tick);
+  }
+
+  // console.time('done');
+
+  cycler();
+
+});
 
 export default mapGenerate;
