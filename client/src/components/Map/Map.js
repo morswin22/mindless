@@ -57,14 +57,14 @@ class Map extends Grid {
       this.p.noStroke();
       this.p.rectMode(this.p.CORNER);
   
-      const x = Math.floor(camera.pos.x / this.config.size) - (this.m)/2;
-      const y = Math.floor(camera.pos.y / this.config.size) - (this.n)/2;
+      const x = Math.floor(camera.pos.x / this.config.size) - Math.floor((this.n)/2);
+      const y = Math.floor(camera.pos.y / this.config.size) - Math.floor((this.m)/2);
 
       const initialI = Math.max(x, this.mapConstrains.x.min);
-      const limitI = Math.min(this.m + x + 1, this.mapConstrains.x.max);
+      const limitI = Math.min(this.n + x + 1, this.mapConstrains.x.max);
 
       const initialJ = Math.max(y, this.mapConstrains.y.min);
-      const limitJ = Math.min(this.n + y + 1, this.mapConstrains.y.max);
+      const limitJ = Math.min(this.m + y + 1, this.mapConstrains.y.max);
 
       let i = initialI;
       while(i < limitI) {
@@ -84,8 +84,8 @@ class Map extends Grid {
     this.p.noStroke();
     this.p.rectMode(this.p.CORNER);
 
-    const x = Math.floor(this.p.width / 2 / this.config.size) - (this.m)/2;
-    const y = Math.floor(this.p.height / 2 / this.config.size) - (this.n)/2;
+    const x = Math.floor((this.p.width / 2 / this.config.size) - (this.m)/2);
+    const y = Math.floor((this.p.height / 2 / this.config.size) - (this.n)/2);
 
     const initialI = Math.max(x, this.mapConstrains.x.min);
     const limitI = Math.min(this.m + x + 1, this.mapConstrains.x.max);
