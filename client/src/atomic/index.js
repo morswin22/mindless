@@ -8,7 +8,8 @@ import GridIntegration from './World/Grid';
 import MapIntegration from './World/Map';
 import WorldCreatorIntegration from './World/Creator';
 import MainMenuIntegration from './World/Menu';
-const subviews = { LandmassGenerator, ConsoleIntegration, GridIntegration, MapIntegration, WorldCreatorIntegration, MainMenuIntegration };
+import FilterIntegration from './Morphing/Filter';
+const subviews = { LandmassGenerator, ConsoleIntegration, GridIntegration, MapIntegration, WorldCreatorIntegration, MainMenuIntegration, FilterIntegration };
 
 const Atomic = () => {
   const { id } = useParams();
