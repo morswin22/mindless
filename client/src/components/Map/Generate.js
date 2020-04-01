@@ -1,15 +1,6 @@
-export const DEFAULT_TYPES = {
-  ocean: 0,
-  water: 1,
-  sand: 2,
-  grass: 3,
-  stone: 4,
-  dirt: 5,
-  forest: 6,
-  temple: 7,
-};
+import { TERRAIN_BASIC_TYPES, TERRAIN_TYPES, terrainFilter } from './TerrainMorphing';
 
-const DEFAULT_CONFIG = {
+export const DEFAULT_CONFIG = {
   tick: 20,
   seed: 0,
   scale: 200,
@@ -39,7 +30,7 @@ const DEFAULT_CONFIG = {
       size: 1,
     },
   }
-}
+};
 
 const getHeight = (p, x, y, scale, octaves, persistance, lacunarity) => {
   let amplitude = 1;
@@ -86,13 +77,13 @@ const mapGenerate = (p, config) => new Promise((resolve, reject) => {
 
   let min = 1
   let max = 0;
-  const heightMap = [];
+  let heightMap = [];
   const spawnpoint = { x: 0, y: 0};
   
   const callStack = [
     () => {
       // Get min and max height for re-mapping
-      // console.time('getMinMax');
+      console.time('getMinMax');
       for (let x = 0; x < width; x++) {
         heightMap.push([]);
         for (let y = 0; y < height; y++) {
@@ -102,36 +93,58 @@ const mapGenerate = (p, config) => new Promise((resolve, reject) => {
           heightMap[x].push(z);
         }
       }
-      // console.timeEnd('getMinMax');
+      console.timeEnd('getMinMax');
     },
     () => {
       // Generate height map
-      // console.time('generateHeightMap');
+      console.time('generateHeightMap');
       for (let x = 0; x < width; x++) {
         for (let y = 0; y < height; y++) {
           let z = p.map(heightMap[x][y], min, max, 0, 1);
           let type;
     
           if (z < ocean) {
-            type = DEFAULT_TYPES.ocean;
+            type = TERRAIN_BASIC_TYPES[0];
           } else if (z < water) {
-            type = DEFAULT_TYPES.water;
+            type = TERRAIN_BASIC_TYPES[1];
           } else if (z < sand) {
-            type = DEFAULT_TYPES.sand;
+            type = TERRAIN_BASIC_TYPES[2];
           } else if (z < grass) {
-            type = DEFAULT_TYPES.grass;
+            type = TERRAIN_BASIC_TYPES[3];
           } else {
-            type = DEFAULT_TYPES.stone;
+            type = TERRAIN_BASIC_TYPES[4];
           }
     
           heightMap[x][y] = type;
         }
       }
-      // console.timeEnd('generateHeightMap');
+      console.timeEnd('generateHeightMap');
     }, 
     () => {
+      if (config.preview) return; // skip morphing
+      // Filter that adds terrain morphing with layering
+      console.time('addTerrainMorphing');
+
+      const filtered = Array(heightMap.length).fill(null).map((n,x) => Array(heightMap[0].length).fill(null).map((n,y) => heightMap[x][y]));
+
+      // extend filter beyond rendered map
+      for (let x = 1; x < width-1; x++) {
+        for (let y = 1; y < height-1; y++) {   
+          filtered[x][y] = terrainFilter([
+            heightMap[x-1][y-1], heightMap[x][y-1], heightMap[x+1][y-1], 
+            heightMap[x-1][y], heightMap[x][y], heightMap[x+1][y], 
+            heightMap[x-1][y+1], heightMap[x][y+1], heightMap[x+1][y+1],
+          ]);
+        }
+      }
+
+      heightMap = filtered;
+
+      console.timeEnd('addTerrainMorphing');
+    },
+    () => {
       // Generate structures
-      // console.time('generateStructures');
+      console.time('generateStructures');
       for (let structureName in structures) {
         const structure = structures[structureName];
         const count = Math.floor(typeof structure.count === 'object' ? p.random(structure.count[0], structure.count[1]) : structure.count);
@@ -162,22 +175,22 @@ const mapGenerate = (p, config) => new Promise((resolve, reject) => {
           for (let i = x - structureSize; i <= x + structureSize; i++) {
             for (let j = y - structureSize; j <= y + structureSize; j++) {
               if (p.dist(x,y,i,j) > structureSize+0.5) continue;
-              if (heightMap[i] && heightMap[i][j]) heightMap[i][j] = DEFAULT_TYPES[structureName];
+              if (heightMap[i] && heightMap[i][j]) heightMap[i][j] = TERRAIN_TYPES[structureName];
             }
           }
         }
       }
-      // console.timeEnd('generateStructures');
+      console.timeEnd('generateStructures');
     }, () => {
       // Generate spawn point
-      // console.time('getSpawnpoint');
+      console.time('getSpawnpoint');
       do {
         spawnpoint.x = Math.floor(p.random(0, width));
         spawnpoint.y = Math.floor(p.random(0, height));
-      } while (heightMap[spawnpoint.x][spawnpoint.y] !== DEFAULT_TYPES.grass);
-      // console.timeEnd('getSpawnpoint');
+      } while (heightMap[spawnpoint.x][spawnpoint.y] !== TERRAIN_TYPES.grass);
+      console.timeEnd('getSpawnpoint');
     }, () => {
-      // console.timeEnd('done');
+      console.timeEnd('done');
       resolve({ map: heightMap, mapSeed: seed, spawnpoint });
     }
   ];
@@ -187,7 +200,7 @@ const mapGenerate = (p, config) => new Promise((resolve, reject) => {
     if (callStack.length) setTimeout(cycler, config.tick);
   }
 
-  // console.time('done');
+  console.time('done');
 
   cycler();
 

@@ -1,22 +1,24 @@
 import Grid from "components/Grid/Grid";
-import mapGenerate, { DEFAULT_TYPES } from "./Generate";
+import mapGenerate from "./Generate";
+import { TERRAIN_BASIC_TYPES, TERRAIN_TYPES } from './TerrainMorphing';
 
 const DEFAULT_CONFIG = {
   displays: {
-    [DEFAULT_TYPES.ocean]: [5,72,174],
-    [DEFAULT_TYPES.water]: [36,201,188],
-    [DEFAULT_TYPES.sand]: [236,203,161],
-    [DEFAULT_TYPES.grass]: [49,122,55],
-    [DEFAULT_TYPES.stone]: [143,155,156],
-    [DEFAULT_TYPES.dirt]: [76,69,59],
-    [DEFAULT_TYPES.forest]: [22,77,36],
-    [DEFAULT_TYPES.temple]: [255,0,255],
+    [TERRAIN_BASIC_TYPES[0]]: [5,72,174],
+    [TERRAIN_BASIC_TYPES[1]]: [36,201,188],
+    [TERRAIN_BASIC_TYPES[2]]: [236,203,161],
+    [TERRAIN_BASIC_TYPES[3]]: [49,122,55],
+    [TERRAIN_BASIC_TYPES[4]]: [143,155,156],
+    [TERRAIN_BASIC_TYPES[5]]: [76,69,59],
+    // [TERRAIN_TYPES.forest]: [22,77,36],
+    // [TERRAIN_TYPES.temple]: [255,0,255],
   },
+  textures: null,
   batches: 5000,
 };
 
 class Map extends Grid {
-  constructor(p) {
+  constructor(p, textures) {
     super(p);
     this.configurate(DEFAULT_CONFIG);
   }
@@ -47,13 +49,13 @@ class Map extends Grid {
   }
 
   isSpawnable(x, y) {
-    return this.map && this.mapConstrains && !(x < this.mapConstrains.x.min || y < this.mapConstrains.y.min || x >= this.mapConstrains.x.max || y >= this.mapConstrains.y.max) && this.map[x][y] === DEFAULT_TYPES.grass;
+    return this.map && this.mapConstrains && !(x < this.mapConstrains.x.min || y < this.mapConstrains.y.min || x >= this.mapConstrains.x.max || y >= this.mapConstrains.y.max) && this.map[x][y] === TERRAIN_TYPES.grass;
   }
 
   draw(camera) {
     super.draw(camera);
 
-    if (this.map) {
+    if (this.map && this.config.textures) {
       this.p.noStroke();
       this.p.rectMode(this.p.CORNER);
   
@@ -70,8 +72,9 @@ class Map extends Grid {
       while(i < limitI) {
         let j = initialJ;
         while (j < limitJ) {
-          this.p.fill(this.p.color(...this.config.displays[this.map[i][j]]));
-          this.p.rect(i*this.config.size, j*this.config.size, this.config.size + 1, this.config.size + 1);
+          for (const type of this.map[i][j]) {
+            this.p.image(this.config.textures[type], i*this.config.size, j*this.config.size, this.config.size + 1, this.config.size + 1);
+          }
           j++;
         }
         i++;

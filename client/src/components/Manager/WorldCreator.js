@@ -131,7 +131,7 @@ class WorldCreator extends Window {
           p.createCanvas(500, 500);
           p.fill('#ffffff');
           map.configurate({ size: 1 });
-          map.generate({ seed: this.data.seed })
+          map.generate({ seed: this.data.seed, preview: true })
             .then(() => {
               [this.data.map, this.data.spawnpoint] = [map.map, map.spawnpoint];
               map.drawPreview();

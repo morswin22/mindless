@@ -7,6 +7,7 @@ import Input from 'components/Element/Input';
 import { useAuthorization } from 'components/User/User';
 import Map from 'components/Map/Map';
 import Player from 'components/Player/Player';
+import { TERRAIN_TYPES } from 'components/Map/TerrainMorphing';
 
 const MapIntegration = () => {
   const { loading, user, logout } = useAuthorization(user => user);
@@ -29,10 +30,19 @@ const MapIntegration = () => {
           "generate-seed": seed => map.generate({ seed: Number(seed) }),
           "tp": (x, y) => player.pos.set(Number(x), Number(y)),
         });
-            
+           
+        const textures = {};
+        p.preload = async () => {
+          for (const type in TERRAIN_TYPES) {
+            textures[type] = p.loadImage((await import(`assets/terrain/${type}.png`)).default);
+          }
+        }
+
         p.setup = () => {
           p.createCanvas(p.windowWidth, p.windowHeight);
           p.windowResized();
+
+          map.configurate({ textures });
         }
       
         p.draw = () => {
